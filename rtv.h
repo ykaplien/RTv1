@@ -63,6 +63,8 @@ void	error(int error);
 void	parseScene(t_rtv *rtv, char* mapName);
 void	parseLine(t_rtv *rtv, char *line);
 int		spotObject(char *line);
+void	parseCamera(t_rtv *rtv, char *line);
+void	parseSphere(t_rtv *rtv, char *line);
 
 
 #endif
