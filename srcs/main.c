@@ -22,7 +22,7 @@ void	error(int error)
 void	parseScene(t_rtv *rtv, char* mapName)
 {
 	int		fd;
-	char*	line;
+	char	*line;
 
 	fd = open(mapName, O_RDONLY);
 	if (fd < 0)
@@ -46,7 +46,29 @@ void	parseLine(t_rtv *rtv, char *line)
 	int		type;
 
 	type = spotObject(line);
+	if (type == 1)
+		createSphere(rtv, line);
+	else if (type == 2)
+		createCamera(rtv, line);
+	else if (type == 3)
+		createCamera(rtv, line);
+
+}
+
+
+void	parseSphere(t_rtv *rtv, char *line)
+{
 	
+}
+
+void	parseCamera(t_rtv *rtv, char *line)
+{
+
+}
+
+void	parseLight(t_rtv *rtv, char *line)
+{
+
 }
 
 int		spotObject(char *line)
