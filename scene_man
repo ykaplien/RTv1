@@ -1,15 +1,9 @@
 camera:0,0,-20
 
 #light
- position:0,0,-200
  intense:8
+ position:0,0,-200
 
-#sphere
- position:1,0,5
- specular:25
- radius:6
- color:255,0,0
- 
 #plane
  color:0,0,255
  specular:0
@@ -28,4 +22,10 @@ camera:0,0,-20
  specular:0
  angle:80
  normal:-1,1,0
+ center:1,0,5
+
+#sphere
+ color:255,0,0
+ specular:25
+ radius:6
  center:1,0,5

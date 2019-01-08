@@ -14,7 +14,7 @@ NAME = RTv1
 SRCS = srcs/main.c\
 
 FLAGS = -Wall -Werror -Wextra
-HEADER = fdf.h
+HEADER = RTv1.h
 OBJS = $(SRCS:.c=.o)
 
 all: $(NAME) 
