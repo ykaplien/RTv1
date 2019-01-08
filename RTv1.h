@@ -45,29 +45,29 @@ typedef struct s_sphere
 
 typedef struct s_cone
 {
-	double		a;
-	t_vector	c;
-	t_vector	v;
+	t_vector	position;
+	t_vector	normal;
+	double		angle;
+	double		specular;
 	int			color;
-	double		reflect;
 }				t_cone;
 
 typedef struct s_plane
 {
-	double		r;
-	t_vector	c;
-	t_vector	v;
+	t_vector	position;
+	t_vector	normal;
+	double		specular;
 	int			color;
-	double		reflect;
 }				t_plane;
+
 
 typedef struct s_cylinder
 {
-	double		r;
-	t_vector	c;
-	t_vector	v;
+	t_vector	position;
+	t_vector	normal;
+	double		specular;
+	double		radius;
 	int			color;
-	double		reflect;
 }				t_cylinder;
 
 typedef struct s_light
@@ -109,5 +109,12 @@ int		parseSpecular(t_rtv *rtv, double *specular);
 int		parseRadius(t_rtv *rtv, double *radius);
 int		parseColor(t_rtv *rtv, int *color);
 
+void	parseCone(t_rtv *rtv);
+int		parseNormal(t_rtv *rtv, t_vector *normal);
+int		parseAngle(t_rtv *rtv, double *angle);
+
+void	parsePlane(t_rtv *rtv);
+
+void	parseCylinder(t_rtv *rtv);
 
 #endif

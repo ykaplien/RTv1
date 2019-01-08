@@ -42,12 +42,12 @@ void	parseScene(t_object *obj, t_rtv *rtv)
 			parseLight(rtv);
 		else if (ft_strncmp(line, "#sphere", 7) == 0)
 			parseSphere(rtv);
-		// else if (ft_strncmp(line, "#cone", 5) == 0)
-		// 	parseCone;
-		// else if (ft_strncmp(line, "#plane", 6) == 0)
-		// 	parsePlane;
-		// else if (ft_strncmp(line, "#cylinder", 9) == 0)
-		// 	parseCylinder;
+		else if (ft_strncmp(line, "#cone", 5) == 0)
+			parseCone(rtv);
+		else if (ft_strncmp(line, "#plane", 6) == 0)
+			parsePlane(rtv);
+		else if (ft_strncmp(line, "#cylinder", 9) == 0)
+			parseCylinder(rtv);
 	}
 }
 
@@ -61,11 +61,11 @@ void	parseLight(t_rtv *rtv)
 		list = ft_lstnew(&light, sizeof(t_light));
 		list->content_size = LIGHT;
 		ft_lstadd(&(rtv->light), list);
-		return ;
-		// printf("coords %f %f %f\n", light.position.x, light.position.y, light.position.z);
-		// printf("intense %f\n", light.intense);
+		printf("LIGHT position %f %f %f\n", light.position.x, light.position.y, light.position.z);
+		printf("intense %f\n\n", light.intense);
 	}
-	ft_putendl("Missing parameters for light!!!");
+	else
+		ft_putendl("Missing parameters for light!!!");
 }
 
 int		parsePosition(t_rtv *rtv, t_vector *position)
@@ -76,12 +76,16 @@ int		parsePosition(t_rtv *rtv, t_vector *position)
 	if ((get_next_line(rtv->fd, &line) > 0) && (ft_strncmp(line, " position:", 10) == 0))
 	{
 		data = ft_strsplit(&line[10], ',');
-		position->x = (double)ft_atoi(data[0]);
-		position->y = (double)ft_atoi(data[1]);
-		position->z = (double)ft_atoi(data[2]);
-		// printf("%f %f %f\n", position->x, position->y, position->z);
+		if (data[0] && data[1] && data[2])
+		{
+			position->x = (double)ft_atoi(data[0]);
+			position->y = (double)ft_atoi(data[1]);
+			position->z = (double)ft_atoi(data[2]);
+			// printf("%f %f %f\n", position->x, position->y, position->z);
+			free(data);
+			return (1);
+		}
 		free(data);
-		return (1);
 	}
 	return (0);
 }
@@ -111,10 +115,10 @@ void	parseSphere(t_rtv *rtv)
 		(parseRadius(rtv, &(sphere.radius))) && 
 		(parseColor(rtv, &(sphere.color))))
 	{
-		// printf("SPHERE position: %f %f %f\n", sphere.position.x, sphere.position.y, sphere.position.z);
-		// printf("specular %f\n", sphere.specular);
-		// printf("radius %f\n", sphere.radius);
-		// printf("color %d\n", sphere.color);
+		printf("SPHERE position: %f %f %f\n", sphere.position.x, sphere.position.y, sphere.position.z);
+		printf("specular %f\n", sphere.specular);
+		printf("radius %f\n", sphere.radius);
+		printf("color %d\n\n", sphere.color);
 		list = ft_lstnew(&sphere, sizeof(t_sphere));
 		list->content_size = SPHERE;
 		ft_lstadd(&(rtv->scene), list);
@@ -168,6 +172,9 @@ int		parseColor(t_rtv *rtv, int *color)
 		colorVector.z = (double)ft_atoi(data[2]);
 		free(data);
 		res = rgbToInt(colorVector);
+		printf("R%f\n", colorVector.x);
+		printf("G%f\n", colorVector.y);
+		printf("B%f\n", colorVector.z);
 		*color = res;
 		return (1);
 	}
@@ -184,6 +191,112 @@ int		rgbToInt(t_vector color)
 	return (res);
 }
 
+void	parseCone(t_rtv *rtv)
+{
+	t_cone		cone;
+	t_list		*list;
+
+	if (parsePosition(rtv, &(cone.position)) &&
+		(parseNormal(rtv, &(cone.normal))) &&
+		(parseAngle(rtv, &(cone.angle))) &&
+		(parseSpecular(rtv, &(cone.specular))) &&
+		(parseColor(rtv, &(cone.color))))
+	{
+		printf("CONE position: %f %f %f\n", cone.position.x, cone.position.y, cone.position.z);
+		printf("normal %f %f %f\n", cone.normal.x, cone.normal.y, cone.normal.z);
+		printf("angle %f\n", cone.angle);
+		printf("specular %f\n", cone.specular);
+		printf("color %d\n\n", cone.color);
+		list = ft_lstnew(&cone, sizeof(t_cone));
+		list->content_size = CONE;
+		ft_lstadd(&(rtv->scene), list);
+	}
+	else
+		ft_putendl("Missing parameters for cone!!!");
+}
+
+int		parseNormal(t_rtv *rtv, t_vector *normal)
+{
+	char		*line;
+	char		**data;
+
+	if ((get_next_line(rtv->fd, &line) > 0) && (ft_strncmp(line, " normal:", 8) == 0))
+	{
+		data = ft_strsplit(&line[8], ',');
+		if (data[0] && data[1] && data[2])
+		{
+			normal->x = (double)ft_atoi(data[0]);
+			normal->y = (double)ft_atoi(data[1]);
+			normal->z = (double)ft_atoi(data[2]);
+			// printf("%f %f %f\n", normal->x, normal->y, normal->z);
+			free(data);
+			return (1);
+		}
+		free(data);
+	}
+	return (0);
+}
+
+int		parseAngle(t_rtv *rtv, double *angle)
+{
+	char		*line;
+	double		data;
+
+	if ((get_next_line(rtv->fd, &line) > 0) && (ft_strncmp(line, " angle:", 7) == 0))
+	{
+		data = (double)ft_atoi(&line[7]) / 2;
+		*angle = tan(data);
+		return (1);
+	}
+	return (0);
+}
+
+void	parsePlane(t_rtv *rtv)
+{
+	t_plane		plane;
+	t_list		*list;
+
+	if (parsePosition(rtv, &(plane.position)) &&
+		(parseNormal(rtv, &(plane.normal))) &&
+		(parseSpecular(rtv, &(plane.specular))) &&
+		(parseColor(rtv, &(plane.color))))
+	{
+		printf("PLANE position: %f %f %f\n", plane.position.x, plane.position.y, plane.position.z);
+		printf("normal %f %f %f\n", plane.normal.x, plane.normal.y, plane.normal.z);
+		printf("specular %f\n", plane.specular);
+		printf("color %d\n\n", plane.color);
+		list = ft_lstnew(&plane, sizeof(t_plane));
+		list->content_size = PLANE;
+		ft_lstadd(&(rtv->scene), list);
+	}
+	else
+		ft_putendl("Missing parameters for plane!!!");
+}
+
+void	parseCylinder(t_rtv *rtv)
+{
+	t_cylinder		cylinder;
+	t_list		*list;
+
+	if (parsePosition(rtv, &(cylinder.position)) &&
+		(parseNormal(rtv, &(cylinder.normal))) &&
+		(parseSpecular(rtv, &(cylinder.specular))) &&
+		(parseRadius(rtv, &(cylinder.radius))) &&
+		(parseColor(rtv, &(cylinder.color))))
+	{
+		printf("PLANE position: %f %f %f\n", cylinder.position.x, cylinder.position.y, cylinder.position.z);
+		printf("normal %f %f %f\n", cylinder.normal.x, cylinder.normal.y, cylinder.normal.z);
+		printf("specular %f\n", cylinder.specular);
+		printf("radius %f\n", cylinder.radius);
+		printf("color %d\n\n", cylinder.color);
+		list = ft_lstnew(&cylinder, sizeof(t_cylinder));
+		list->content_size = PLANE;
+		ft_lstadd(&(rtv->scene), list);
+	}
+	else
+		ft_putendl("Missing parameters for plane!!!");
+}
+
 void	parseCam(char *line, t_rtv *rtv)
 {
 	char		**tmp;
@@ -192,6 +305,7 @@ void	parseCam(char *line, t_rtv *rtv)
 	rtv->cam.x = (double)ft_atoi(tmp[0]);
 	rtv->cam.y = (double)ft_atoi(tmp[1]);
 	rtv->cam.z = (double)ft_atoi(tmp[2]);
+	printf("CAM %f %f %f\n\n", rtv->cam.x, rtv->cam.y, rtv->cam.z);
 	free(tmp);
 }
 

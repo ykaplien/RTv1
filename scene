@@ -2,30 +2,30 @@ camera:0,0,-20
 
 #light
  position:0,0,-200
- intense:8
+ intense:0
 
 #sphere
  position:1,0,5
  specular:25
  radius:6
  color:255,0,0
- 
-#plane
- color:0,0,255
- specular:0
- normal:0,0,1
- center:0,0,30
-
-#cylinder
- color:0,255,0
- specular:0
- radius:4
- normal:1,1,0
- center:0,0,5
 
 #cone
- color:255,255,0
- specular:0
- angle:80
+ position:1,0,5
  normal:-1,1,0
- center:1,0,5
+ angle:80
+ specular:0
+ color:255,255,0
+
+#plane
+ position:0,0,30
+ normal:0,0,1
+ specular:0
+ color:0,0,255
+
+#cylinder
+ position:0,0,5
+ normal:1,1,0
+ specular:0
+ radius:4
+ color:0,255,0
