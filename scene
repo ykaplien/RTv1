@@ -29,3 +29,11 @@ camera:0,0,-20
  specular:0
  radius:4
  color:0,255,0
+
+#light
+ position:0,0,-20
+ intense:0
+
+#light
+ position:1,0,-200
+ intense:0

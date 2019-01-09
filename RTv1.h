@@ -13,11 +13,13 @@
 #ifndef FT_RTV1_H
 # define FT_RTV1_H
 
-# define LIGHT 42
-# define SPHERE 43
-# define CONE 44
-# define PLANE 45
-# define CYLINDER 46
+# define WIN_X 1200
+# define WIN_Y 1200
+# define LIGHT 442
+# define SPHERE 443
+# define CONE 444
+# define PLANE 445
+# define CYLINDER 446
 
 # include <stdlib.h>
 # include <unistd.h>
@@ -88,33 +90,44 @@ typedef struct s_object
 typedef struct	s_rtv
 {
 	int			fd;
+
+	void		*mlxPtr;
+	void		*winPtr;
+	void		*imgPtr;
+	int			*imgSrc;
+
 	t_vector	cam;
 	t_list		*light;
 	t_list		*scene;
+
+	t_vector	viewport;
 }				t_rtv;
+
+void	canvasToViewport(int x, int y);
+void	rayTracing(t_rtv *rtv);
+
 
 void	error(int error);
 void	openFile(char **argv, t_object *obj, t_rtv *rtv);
 int		rgbToInt(t_vector color);
+void	printScene(t_rtv *rtv);
+void	printLight(t_rtv *rtv);
+void	canvasInit(t_rtv *rtv);
+int		eventHandle(int key, t_rtv *rtv);
 
 void	parseScene(t_object *obj, t_rtv *rtv);
 void	parseCam(char *line, t_rtv *rtv);
-
 void	parseLight(t_rtv *rtv);
 int		parsePosition(t_rtv *rtv, t_vector *position);
 int		parseIntense(t_rtv *rtv, double *intense);
-
 void	parseSphere(t_rtv *rtv);
 int		parseSpecular(t_rtv *rtv, double *specular);
 int		parseRadius(t_rtv *rtv, double *radius);
 int		parseColor(t_rtv *rtv, int *color);
-
 void	parseCone(t_rtv *rtv);
 int		parseNormal(t_rtv *rtv, t_vector *normal);
 int		parseAngle(t_rtv *rtv, double *angle);
-
 void	parsePlane(t_rtv *rtv);
-
 void	parseCylinder(t_rtv *rtv);
 
 #endif
