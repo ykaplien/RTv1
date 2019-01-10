@@ -21,15 +21,15 @@ void	error(int error)
 	exit(0);
 }
 
-void	openFile(char **argv, t_object *obj, t_rtv *rtv)
+void	open_file(char **argv, t_object *obj, t_rtv *rtv)
 {
 	rtv->fd = open(argv[1], O_RDONLY);
 	if (rtv->fd == -1)
 		error(2);
-	parseScene(obj, rtv);
+	parse_scene(obj, rtv);
 }
 
-void	parseScene(t_object *obj, t_rtv *rtv)
+void	parse_scene(t_object *obj, t_rtv *rtv)
 {
 	char		*line;
 	t_list		*tmp;
@@ -37,26 +37,26 @@ void	parseScene(t_object *obj, t_rtv *rtv)
 	while (get_next_line(rtv->fd, &line) > 0)
 	{
 		if (ft_strncmp(line, "camera:", 7) == 0)
-			parseCam(line, rtv);
+			parse_cam(line, rtv);
 		else if (ft_strncmp(line, "#light", 6) == 0)
-			parseLight(rtv);
+			parse_light(rtv);
 		else if (ft_strncmp(line, "#sphere", 7) == 0)
-			parseSphere(rtv);
+			parse_sphere(rtv);
 		else if (ft_strncmp(line, "#cone", 5) == 0)
-			parseCone(rtv);
+			parse_cone(rtv);
 		else if (ft_strncmp(line, "#plane", 6) == 0)
-			parsePlane(rtv);
+			parse_plane(rtv);
 		else if (ft_strncmp(line, "#cylinder", 9) == 0)
-			parseCylinder(rtv);
+			parse_cylinder(rtv);
 	}
 }
 
-void	parseLight(t_rtv *rtv)
+void	parse_light(t_rtv *rtv)
 {
 	t_light		light;
 	t_list		*list;
 
-	if (parsePosition(rtv, &(light.position)) && (parseIntense(rtv, &(light.intense))))
+	if (parse_position(rtv, &(light.position)) && (parse_intense(rtv, &(light.intense))))
 	{
 		list = ft_lstnew(&light, sizeof(t_light));
 		list->content_size = LIGHT;
@@ -68,7 +68,7 @@ void	parseLight(t_rtv *rtv)
 		ft_putendl("Missing parameters for light!!!");
 }
 
-int		parsePosition(t_rtv *rtv, t_vector *position)
+int		parse_position(t_rtv *rtv, t_vector *position)
 {
 	char	*line;
 	char	**data;
@@ -90,7 +90,7 @@ int		parsePosition(t_rtv *rtv, t_vector *position)
 	return (0);
 }
 
-int		parseIntense(t_rtv *rtv, double *intense)
+int		parse_intense(t_rtv *rtv, double *intense)
 {
 	char	*line;
 	double	data;
@@ -105,15 +105,15 @@ int		parseIntense(t_rtv *rtv, double *intense)
 	return (0);
 }
 
-void	parseSphere(t_rtv *rtv)
+void	parse_sphere(t_rtv *rtv)
 {
 	t_sphere	sphere;
 	t_list		*list;
 
-	if (parsePosition(rtv, &(sphere.position)) && 
-		(parseSpecular(rtv, &(sphere.specular))) && 
-		(parseRadius(rtv, &(sphere.radius))) && 
-		(parseColor(rtv, &(sphere.color))))
+	if (parse_position(rtv, &(sphere.position)) && 
+		(parse_specular(rtv, &(sphere.specular))) && 
+		(parse_radius(rtv, &(sphere.radius))) && 
+		(parse_color(rtv, &(sphere.color))))
 	{
 		printf("SPHERE 	position: %f %f %f\n", sphere.position.x, sphere.position.y, sphere.position.z);
 		printf("		specular %f\n", sphere.specular);
@@ -127,7 +127,7 @@ void	parseSphere(t_rtv *rtv)
 		ft_putendl("Missing parameters for sphere!!!");
 }
 
-int		parseSpecular(t_rtv *rtv, double *specular)
+int		parse_specular(t_rtv *rtv, double *specular)
 {
 	char		*line;
 	double		data;
@@ -142,7 +142,7 @@ int		parseSpecular(t_rtv *rtv, double *specular)
 	return (0);
 }
 
-int		parseRadius(t_rtv *rtv, double *radius)
+int		parse_radius(t_rtv *rtv, double *radius)
 {
 	char		*line;
 	double		data;
@@ -157,7 +157,7 @@ int		parseRadius(t_rtv *rtv, double *radius)
 	return (0);
 }
 
-int		parseColor(t_rtv *rtv, int *color)
+int		parse_color(t_rtv *rtv, int *color)
 {
 	int			res;
 	char		*line;
@@ -171,7 +171,7 @@ int		parseColor(t_rtv *rtv, int *color)
 		colorVector.y = (double)ft_atoi(data[1]);
 		colorVector.z = (double)ft_atoi(data[2]);
 		free(data);
-		res = rgbToInt(colorVector);
+		res = rgb_to_int(colorVector);
 		// printf("R%f\n", colorVector.x);
 		// printf("G%f\n", colorVector.y);
 		// printf("B%f\n", colorVector.z);
@@ -181,7 +181,7 @@ int		parseColor(t_rtv *rtv, int *color)
 	return (0);
 }
 
-int		rgbToInt(t_vector color)
+int		rgb_to_int(t_vector color)
 {
 	int			res;
 
@@ -191,16 +191,16 @@ int		rgbToInt(t_vector color)
 	return (res);
 }
 
-void	parseCone(t_rtv *rtv)
+void	parse_cone(t_rtv *rtv)
 {
 	t_cone		cone;
 	t_list		*list;
 
-	if (parsePosition(rtv, &(cone.position)) &&
-		(parseNormal(rtv, &(cone.normal))) &&
-		(parseAngle(rtv, &(cone.angle))) &&
-		(parseSpecular(rtv, &(cone.specular))) &&
-		(parseColor(rtv, &(cone.color))))
+	if (parse_position(rtv, &(cone.position)) &&
+		(parse_normal(rtv, &(cone.normal))) &&
+		(parse_angle(rtv, &(cone.angle))) &&
+		(parse_specular(rtv, &(cone.specular))) &&
+		(parse_color(rtv, &(cone.color))))
 	{
 		printf("CONE 	position: %f %f %f\n", cone.position.x, cone.position.y, cone.position.z);
 		printf("		normal %f %f %f\n", cone.normal.x, cone.normal.y, cone.normal.z);
@@ -215,7 +215,7 @@ void	parseCone(t_rtv *rtv)
 		ft_putendl("Missing parameters for cone!!!");
 }
 
-int		parseNormal(t_rtv *rtv, t_vector *normal)
+int		parse_normal(t_rtv *rtv, t_vector *normal)
 {
 	char		*line;
 	char		**data;
@@ -237,7 +237,7 @@ int		parseNormal(t_rtv *rtv, t_vector *normal)
 	return (0);
 }
 
-int		parseAngle(t_rtv *rtv, double *angle)
+int		parse_angle(t_rtv *rtv, double *angle)
 {
 	char		*line;
 	double		data;
@@ -251,15 +251,15 @@ int		parseAngle(t_rtv *rtv, double *angle)
 	return (0);
 }
 
-void	parsePlane(t_rtv *rtv)
+void	parse_plane(t_rtv *rtv)
 {
 	t_plane		plane;
 	t_list		*list;
 
-	if (parsePosition(rtv, &(plane.position)) &&
-		(parseNormal(rtv, &(plane.normal))) &&
-		(parseSpecular(rtv, &(plane.specular))) &&
-		(parseColor(rtv, &(plane.color))))
+	if (parse_position(rtv, &(plane.position)) &&
+		(parse_normal(rtv, &(plane.normal))) &&
+		(parse_specular(rtv, &(plane.specular))) &&
+		(parse_color(rtv, &(plane.color))))
 	{
 		printf("PLANE	position: %f %f %f\n", plane.position.x, plane.position.y, plane.position.z);
 		printf("		normal %f %f %f\n", plane.normal.x, plane.normal.y, plane.normal.z);
@@ -273,16 +273,16 @@ void	parsePlane(t_rtv *rtv)
 		ft_putendl("Missing parameters for plane!!!");
 }
 
-void	parseCylinder(t_rtv *rtv)
+void	parse_cylinder(t_rtv *rtv)
 {
 	t_cylinder		cylinder;
 	t_list		*list;
 
-	if (parsePosition(rtv, &(cylinder.position)) &&
-		(parseNormal(rtv, &(cylinder.normal))) &&
-		(parseSpecular(rtv, &(cylinder.specular))) &&
-		(parseRadius(rtv, &(cylinder.radius))) &&
-		(parseColor(rtv, &(cylinder.color))))
+	if (parse_position(rtv, &(cylinder.position)) &&
+		(parse_normal(rtv, &(cylinder.normal))) &&
+		(parse_specular(rtv, &(cylinder.specular))) &&
+		(parse_radius(rtv, &(cylinder.radius))) &&
+		(parse_color(rtv, &(cylinder.color))))
 	{
 		printf("CYLINDER 	position: %f %f %f\n", cylinder.position.x, cylinder.position.y, cylinder.position.z);
 		printf("			normal %f %f %f\n", cylinder.normal.x, cylinder.normal.y, cylinder.normal.z);
@@ -297,7 +297,7 @@ void	parseCylinder(t_rtv *rtv)
 		ft_putendl("Missing parameters for plane!!!");
 }
 
-void	parseCam(char *line, t_rtv *rtv)
+void	parse_cam(char *line, t_rtv *rtv)
 {
 	char		**tmp;
 
@@ -309,7 +309,7 @@ void	parseCam(char *line, t_rtv *rtv)
 	free(tmp);
 }
 
-void	printScene(t_rtv *rtv)
+void	print_scene(t_rtv *rtv)
 {
 	t_list		*list;
 	int			i;
@@ -333,7 +333,7 @@ void	printScene(t_rtv *rtv)
 	}
 }
 
-void	printLight(t_rtv *rtv)
+void	print_light(t_rtv *rtv)
 {
 	t_list		*list;
 	t_light		*light;
@@ -355,7 +355,7 @@ void	printLight(t_rtv *rtv)
 	}
 }
 
-void	canvasInit(t_rtv *rtv)
+void	canvas_init(t_rtv *rtv)
 {
 	int			sizeLine;
 	int			bpp;
@@ -367,7 +367,7 @@ void	canvasInit(t_rtv *rtv)
 	rtv->imgSrc = (int*)mlx_get_data_addr(rtv->imgPtr, &bpp, &sizeLine, &endian);
 }
 
-int		eventHandle(int key, t_rtv *rtv)
+int		event_handle(int key, t_rtv *rtv)
 {
 	if (key == 53)
 	{
@@ -377,7 +377,15 @@ int		eventHandle(int key, t_rtv *rtv)
 	return (0);
 }
 
-void	rayTracing(t_rtv *rtv)
+
+void	canvas_to_viewport(t_rtv *rtv, int x, int y)
+{
+	rtv->viewport.x = x / WIN_X;
+	rtv->viewport.y = y / WIN_Y;
+	rtv->viewport.z = 1;										//		Это d, расстояние до плоскости проекции;
+}
+
+void	ray_tracing(t_rtv *rtv)
 {
 	int			x;
 	int			y;
@@ -389,19 +397,17 @@ void	rayTracing(t_rtv *rtv)
 		y = -WIN_Y / 2;
 		while (y < WIN_Y / 2)
 		{
-			canvasToViewport(x, y);
-			rayResult = traceRay(); // её нету ещё
+			canvas_to_viewport(x, y);
+			rayResult = trace_ray(); // её нету ещё
 			y++;
 		}
 		x++;
 	}
 }
 
-void	canvasToViewport(int x, int y)
+int		trace_ray(t_rtv *rtv)
 {
-	rtv->viewport.x = x / WIN_X;
-	rtv->viewport.y = y / WIN_Y;
-	rtv->viewport.z = 1;										//		Это d, расстояние до плоскости проекции;
+	
 }
 
 int		main(int argc, char **argv)
@@ -413,11 +419,11 @@ int		main(int argc, char **argv)
 	{
 		rtv = (t_rtv*)ft_memalloc(sizeof(t_rtv));
 		obj = (t_object*)ft_memalloc(sizeof(t_object));
-		openFile(argv, obj, rtv);
-		printScene(rtv);
-		printLight(rtv);
-		canvasInit(rtv);
-		mlx_hook(rtv->winPtr, 2, 5, eventHandle, rtv);
+		open_file(argv, obj, rtv);
+		print_scene(rtv);
+		print_light(rtv);
+		canvas_init(rtv);
+		mlx_hook(rtv->winPtr, 2, 5, event_handle, rtv);
 		mlx_loop(rtv->mlxPtr);
 	}
 	else

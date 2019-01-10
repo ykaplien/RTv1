@@ -103,31 +103,31 @@ typedef struct	s_rtv
 	t_vector	viewport;
 }				t_rtv;
 
-void	canvasToViewport(int x, int y);
-void	rayTracing(t_rtv *rtv);
+void	canvas_to_viewport(t_rtv *rtv, int x, int y);
+void	ray_tracing(t_rtv *rtv);
 
 
 void	error(int error);
-void	openFile(char **argv, t_object *obj, t_rtv *rtv);
-int		rgbToInt(t_vector color);
-void	printScene(t_rtv *rtv);
-void	printLight(t_rtv *rtv);
-void	canvasInit(t_rtv *rtv);
-int		eventHandle(int key, t_rtv *rtv);
+void	open_file(char **argv, t_object *obj, t_rtv *rtv);
+int		rgb_to_int(t_vector color);
+void	print_scene(t_rtv *rtv);
+void	print_light(t_rtv *rtv);
+void	canvas_init(t_rtv *rtv);
+int		event_handle(int key, t_rtv *rtv);
 
-void	parseScene(t_object *obj, t_rtv *rtv);
-void	parseCam(char *line, t_rtv *rtv);
-void	parseLight(t_rtv *rtv);
-int		parsePosition(t_rtv *rtv, t_vector *position);
-int		parseIntense(t_rtv *rtv, double *intense);
-void	parseSphere(t_rtv *rtv);
-int		parseSpecular(t_rtv *rtv, double *specular);
-int		parseRadius(t_rtv *rtv, double *radius);
-int		parseColor(t_rtv *rtv, int *color);
-void	parseCone(t_rtv *rtv);
-int		parseNormal(t_rtv *rtv, t_vector *normal);
-int		parseAngle(t_rtv *rtv, double *angle);
-void	parsePlane(t_rtv *rtv);
-void	parseCylinder(t_rtv *rtv);
+void	parse_scene(t_object *obj, t_rtv *rtv);
+void	parse_cam(char *line, t_rtv *rtv);
+void	parse_light(t_rtv *rtv);
+int		parse_position(t_rtv *rtv, t_vector *position);
+int		parse_intense(t_rtv *rtv, double *intense);
+void	parse_sphere(t_rtv *rtv);
+int		parse_specular(t_rtv *rtv, double *specular);
+int		parse_radius(t_rtv *rtv, double *radius);
+int		parse_color(t_rtv *rtv, int *color);
+void	parse_cone(t_rtv *rtv);
+int		parse_normal(t_rtv *rtv, t_vector *normal);
+int		parse_angle(t_rtv *rtv, double *angle);
+void	parse_plane(t_rtv *rtv);
+void	parse_cylinder(t_rtv *rtv);
 
 #endif
