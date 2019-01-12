@@ -397,7 +397,7 @@ void	ray_tracing(t_rtv *rtv)
 		y = -WIN_Y / 2;
 		while (y < WIN_Y / 2)
 		{
-			canvas_to_viewport(x, y);
+			canvas_to_viewport(rtv, x, y);
 			rayResult = trace_ray(); // её нету ещё
 			y++;
 		}
@@ -407,7 +407,32 @@ void	ray_tracing(t_rtv *rtv)
 
 int		trace_ray(t_rtv *rtv)
 {
-	
+	t_list		list;
+	t_clo	 	clo;
+
+	list = *(rtv->scene);
+	clo.obj = NULL;
+	clo = clo_object(rtv);
+	if (clo.obj == NULL)
+		return (BACKGROUND);
+	return ();
+}
+
+t_clo	clo_object(t_rtv *rtv)
+{
+	t_clo		clo;
+	t_vector	inter;
+	t_list		*list;
+
+	clo.distance = MAX_RENDER + 1;
+	clo.obj = NULL;
+	list = rtv->scene;
+	while (list)
+	{
+		inter = ray_intersect(list);
+		if (inter.t1 >= 1 )
+		list = list->next;
+	}
 }
 
 int		main(int argc, char **argv)
