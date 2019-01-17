@@ -409,11 +409,11 @@ void	pixel_to_img(t_rtv *rtv, int x, int y, int color)
 		*(int *)(rtv->imgSrc + ((x + y * WIN_X) * 4)) = color;
 }
 
-int		sphere_color(t_list list)
+int		sphere_color(t_list *list)
 {
 	t_sphere	*res;
 
-	res = (t_sphere*)list.content;
+	res = (t_sphere*)list->content;
 	return (res->color);
 }
 
@@ -459,19 +459,19 @@ t_clo	clo_object(t_rtv *rtv)
 	t_list		*list;
 
 	clo.distance = MAX_RENDER + 1;
-	clo.obj = NULL;
+	clo.object = NULL;
 	list = rtv->scene;
 	while (list)
 	{
 		inter = ray_intersect(rtv, list);
 		if (inter.t1 >= MIN_RENDER && inter.t1 <= MAX_RENDER && inter.t1 < clo.distance)
 		{
-			clo.obj = list;
+			clo.object = list;
 			clo.distance = inter.t1;
 		}
 		if (inter.t2 >= MIN_RENDER && inter.t2 <= MAX_RENDER && inter.t2 < clo.distance)
 		{
-			clo.obj = list;
+			clo.object = list;
 			clo.distance = inter.t2;
 		}
 		list = list->next;
@@ -479,7 +479,7 @@ t_clo	clo_object(t_rtv *rtv)
 	return (clo);
 }
 
-t_inter	ray_intersect(t_rtv *rtv,t_list list)
+t_inter	ray_intersect(t_rtv *rtv,t_list *list)
 {
 	t_inter		res;
 
@@ -488,17 +488,17 @@ t_inter	ray_intersect(t_rtv *rtv,t_list list)
 	return (res);
 }
 
-t_inter	sphere_intersect(t_rtv *rtv, t_sphere sphere)
+t_inter	sphere_intersect(t_rtv *rtv, t_sphere *sphere)
 {
 	t_vector	OC;
 	t_vector	k;
 	t_inter		res;
 	double		discriminant;
 
-	OC = vec_diff(sphere.position, rtv->cam);
+	OC = vec_diff(sphere->position, rtv->cam);
 	k.x = vec_scalar(rtv->cam, rtv->cam);
 	k.y = 2 * vec_scalar(OC, rtv->cam);
-	k.z = vec_scalar(OC, OC) - (sphere.radius * sphere.radius);
+	k.z = vec_scalar(OC, OC) - (sphere->radius * sphere->radius);
 	discriminant = (k.y * k.y) - (4 * k.x * k.z);
 	if (discriminant < 0)
 	{

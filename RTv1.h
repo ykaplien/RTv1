@@ -131,7 +131,7 @@ typedef struct	s_rtv
 
 void	canvas_to_viewport(t_rtv *rtv, int x, int y);
 void	ray_tracing(t_rtv *rtv);
-int		sphere_color(t_list list);
+int		sphere_color(t_list *list);
 void	pixel_to_img(t_rtv *rtv, int x, int y, int color);
 double	vec_scalar(t_vector a, t_vector b);
 t_vector	vec_diff(t_vector a, t_vector b);
@@ -162,8 +162,8 @@ void	parse_cylinder(t_rtv *rtv);
 
 int		trace_ray(t_rtv *rtv);
 t_clo	clo_object(t_rtv *rtv);
-t_inter	ray_intersect(t_rtv *rtv,t_list list);
-t_inter	sphere_intersect(t_rtv *rtv, t_sphere sphere);
+t_inter	ray_intersect(t_rtv *rtv,t_list *list);
+t_inter	sphere_intersect(t_rtv *rtv, t_sphere *sphere);
 
 
 #endif
