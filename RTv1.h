@@ -20,6 +20,10 @@
 # define CONE 444
 # define PLANE 445
 # define CYLINDER 446
+# define MAX_RENDER 60000
+# define MIN_RENDER 1
+# define BACKGROUND 0xffffff
+// # define DOT(d1, d2) (d1[0] * d2[0] + d1[1] * d2[1] + d1[2] * d2[2])
 
 # include <stdlib.h>
 # include <unistd.h>
@@ -29,12 +33,25 @@
 # include <stdio.h>
 # include "libft/libft.h"
 
+typedef struct	s_dot
+{
+	double		x;
+	double		y;
+	double		z;
+}				t_dot;
+
+typedef struct	s_inter
+{
+	double		t1;
+	double		t2;
+}				t_inter;
+
 typedef struct	s_vector
 {
 	double		x;
 	double		y;
 	double		z;
-
+	double		intersect;
 }				t_vector;
 
 typedef struct s_sphere
@@ -87,6 +104,14 @@ typedef struct s_object
 	t_cylinder	*cylinder;
 }				t_object;
 
+typedef struct	s_clo
+{
+	t_object	*object;
+	double		distance; //closest
+	double		z;
+
+}				t_clo;
+
 typedef struct	s_rtv
 {
 	int			fd;
@@ -101,10 +126,15 @@ typedef struct	s_rtv
 	t_list		*scene;
 
 	t_vector	viewport;
+	// double		clo;
 }				t_rtv;
 
 void	canvas_to_viewport(t_rtv *rtv, int x, int y);
 void	ray_tracing(t_rtv *rtv);
+int		sphere_color(t_list list);
+void	pixel_to_img(t_rtv *rtv, int x, int y, int color);
+double	vec_scalar(t_vector a, t_vector b);
+t_vector	vec_diff(t_vector a, t_vector b);
 
 
 void	error(int error);
@@ -129,5 +159,11 @@ int		parse_normal(t_rtv *rtv, t_vector *normal);
 int		parse_angle(t_rtv *rtv, double *angle);
 void	parse_plane(t_rtv *rtv);
 void	parse_cylinder(t_rtv *rtv);
+
+int		trace_ray(t_rtv *rtv);
+t_clo	clo_object(t_rtv *rtv);
+t_inter	ray_intersect(t_rtv *rtv,t_list list);
+t_inter	sphere_intersect(t_rtv *rtv, t_sphere sphere);
+
 
 #endif

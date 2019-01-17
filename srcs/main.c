@@ -385,6 +385,38 @@ void	canvas_to_viewport(t_rtv *rtv, int x, int y)
 	rtv->viewport.z = 1;										//		Это d, расстояние до плоскости проекции;
 }
 
+t_vector	vec_diff(t_vector a, t_vector b)
+{
+	t_vector	res;
+
+	res.x = b.x - a.x;
+	res.y = b.y - a.y;
+	res.z = b.z - a.z;
+	return (res);
+}
+
+double	vec_scalar(t_vector a, t_vector b)
+{
+	double		res;
+
+	res = a.x * b.x + a.y * b.y + a.z * b.z;
+	return (res);
+}
+
+void	pixel_to_img(t_rtv *rtv, int x, int y, int color)
+{
+	if (x >= 0 && x < WIN_X && y >= 0 && y < WIN_Y)
+		*(int *)(rtv->imgSrc + ((x + y * WIN_X) * 4)) = color;
+}
+
+int		sphere_color(t_list list)
+{
+	t_sphere	*res;
+
+	res = (t_sphere*)list.content;
+	return (res->color);
+}
+
 void	ray_tracing(t_rtv *rtv)
 {
 	int			x;
@@ -398,11 +430,13 @@ void	ray_tracing(t_rtv *rtv)
 		while (y < WIN_Y / 2)
 		{
 			canvas_to_viewport(rtv, x, y);
-			rayResult = trace_ray(); // её нету ещё
+			rayResult = trace_ray(rtv); // её нету ещё
 			y++;
+
 		}
 		x++;
 	}
+	mlx_put_image_to_window(rtv->mlxPtr, rtv->winPtr, rtv->imgPtr, 0, 0);
 }
 
 int		trace_ray(t_rtv *rtv)
@@ -411,17 +445,17 @@ int		trace_ray(t_rtv *rtv)
 	t_clo	 	clo;
 
 	list = *(rtv->scene);
-	clo.obj = NULL;
+	clo.object = NULL;
 	clo = clo_object(rtv);
-	if (clo.obj == NULL)
+	if (clo.object == NULL)
 		return (BACKGROUND);
-	return ();
+	return (sphere_color(clo.object));
 }
 
 t_clo	clo_object(t_rtv *rtv)
 {
 	t_clo		clo;
-	t_vector	inter;
+	t_inter		inter;
 	t_list		*list;
 
 	clo.distance = MAX_RENDER + 1;
@@ -429,10 +463,52 @@ t_clo	clo_object(t_rtv *rtv)
 	list = rtv->scene;
 	while (list)
 	{
-		inter = ray_intersect(list);
-		if (inter.t1 >= 1 )
+		inter = ray_intersect(rtv, list);
+		if (inter.t1 >= MIN_RENDER && inter.t1 <= MAX_RENDER && inter.t1 < clo.distance)
+		{
+			clo.obj = list;
+			clo.distance = inter.t1;
+		}
+		if (inter.t2 >= MIN_RENDER && inter.t2 <= MAX_RENDER && inter.t2 < clo.distance)
+		{
+			clo.obj = list;
+			clo.distance = inter.t2;
+		}
 		list = list->next;
 	}
+	return (clo);
+}
+
+t_inter	ray_intersect(t_rtv *rtv,t_list list)
+{
+	t_inter		res;
+
+	if (list->content_size == SPHERE)
+		res = sphere_intersect(rtv, (t_sphere *)list->content);
+	return (res);
+}
+
+t_inter	sphere_intersect(t_rtv *rtv, t_sphere sphere)
+{
+	t_vector	OC;
+	t_vector	k;
+	t_inter		res;
+	double		discriminant;
+
+	OC = vec_diff(sphere.position, rtv->cam);
+	k.x = vec_scalar(rtv->cam, rtv->cam);
+	k.y = 2 * vec_scalar(OC, rtv->cam);
+	k.z = vec_scalar(OC, OC) - (sphere.radius * sphere.radius);
+	discriminant = (k.y * k.y) - (4 * k.x * k.z);
+	if (discriminant < 0)
+	{
+		res.t1 = MAX_RENDER;
+		res.t2 = MAX_RENDER;
+		return (res);
+	}
+	res.t1 = (-k.y + sqrt(discriminant)) / (2 * k.x);
+	res.t2 = (-k.y - sqrt(discriminant)) / (2 * k.x);
+	return (res);
 }
 
 int		main(int argc, char **argv)
