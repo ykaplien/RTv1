@@ -61,8 +61,8 @@ void	parse_light(t_rtv *rtv)
 		list = ft_lstnew(&light, sizeof(t_light));
 		list->content_size = LIGHT;
 		ft_lstadd(&(rtv->light), list);
-		printf("LIGHT 	position %f %f %f\n", light.position.x, light.position.y, light.position.z);
-		printf("		intense %f\n\n", light.intense);
+		// printf("LIGHT 	position %f %f %f\n", light.position.x, light.position.y, light.position.z);
+		// printf("		intense %f\n\n", light.intense);
 	}
 	else
 		ft_putendl("Missing parameters for light!!!");
@@ -115,10 +115,10 @@ void	parse_sphere(t_rtv *rtv)
 		(parse_radius(rtv, &(sphere.radius))) && 
 		(parse_color(rtv, &(sphere.color))))
 	{
-		printf("SPHERE 	position: %f %f %f\n", sphere.position.x, sphere.position.y, sphere.position.z);
-		printf("		specular %f\n", sphere.specular);
-		printf("		radius %f\n", sphere.radius);
-		printf("		color %d\n\n", sphere.color);
+		// printf("SPHERE 	position: %f %f %f\n", sphere.position.x, sphere.position.y, sphere.position.z);
+		// printf("		specular %f\n", sphere.specular);
+		// printf("		radius %f\n", sphere.radius);
+		// printf("		color %d\n\n", sphere.color);
 		list = ft_lstnew(&sphere, sizeof(t_sphere));
 		list->content_size = SPHERE;
 		ft_lstadd(&(rtv->scene), list);
@@ -357,14 +357,13 @@ void	print_light(t_rtv *rtv)
 
 void	canvas_init(t_rtv *rtv)
 {
-	int			sizeLine;
-	int			bpp;
-	int			endian;
-
+	rtv->size_line = WIN_X;
+	rtv->bpp = 32;
+	rtv->endian = 0;
 	rtv->mlxPtr = mlx_init();
 	rtv->winPtr = mlx_new_window(rtv->mlxPtr, WIN_X, WIN_Y, "RTv1");
 	rtv->imgPtr = mlx_new_image(rtv->mlxPtr, WIN_X, WIN_Y);
-	rtv->imgSrc = (int*)mlx_get_data_addr(rtv->imgPtr, &bpp, &sizeLine, &endian);
+	rtv->imgSrc =mlx_get_data_addr(rtv->imgPtr, &rtv->bpp, &rtv->size_line, &rtv->endian);
 }
 
 int		event_handle(int key, t_rtv *rtv)
@@ -403,17 +402,31 @@ double	vec_scalar(t_vector a, t_vector b)
 	return (res);
 }
 
-void	pixel_to_img(t_rtv *rtv, int x, int y, int color)
+// void	pixel_to_img(t_rtv *rtv, int x, int y, int color)
+// {
+// 	if (x >= 0 && x < WIN_X && y >= 0 && y < WIN_Y)
+// 		*(int *)(rtv->imgSrc + ((x + y * WIN_X) * 4)) = color;
+// }
+
+
+void	pixel_put_img(t_rtv *rtv, int x, int y, int color)
 {
-	if (x >= 0 && x < WIN_X && y >= 0 && y < WIN_Y)
-		*(int *)(rtv->imgSrc + ((x + y * WIN_X) * 4)) = color;
+	if (x < WIN_X && y < WIN_Y)
+	{
+		color = mlx_get_color_value(rtv->mlxPtr, color);
+		ft_memcpy(rtv->imgSrc + 4 * WIN_X * y + x * 4, &color, sizeof(int));
+	}
+	rtv->imgSrc =
+	mlx_get_data_addr(rtv->imgPtr, &rtv->bpp, &rtv->size_line, &rtv->endian);
 }
+
 
 int		sphere_color(t_list *list)
 {
 	t_sphere	*res;
 
-	res = (t_sphere*)list->content;
+	res = (t_sphere *)(list->content);
+	printf("%d\n", res->color);
 	return (res->color);
 }
 
@@ -423,7 +436,8 @@ void	ray_tracing(t_rtv *rtv)
 	int			y;
 	int			rayResult;
 
-	x = -WIN_X / 2;
+	x = -WIN_X / 2 ;
+	// printf("ray_tracing\n");
 	while (x < WIN_X / 2)
 	{
 		y = -WIN_Y / 2;
@@ -431,8 +445,8 @@ void	ray_tracing(t_rtv *rtv)
 		{
 			canvas_to_viewport(rtv, x, y);
 			rayResult = trace_ray(rtv); // её нету ещё
+			pixel_put_img(rtv, x + WIN_X / 2, WIN_Y / 2 - y, rayResult);
 			y++;
-
 		}
 		x++;
 	}
@@ -444,6 +458,8 @@ int		trace_ray(t_rtv *rtv)
 	t_list		list;
 	t_clo	 	clo;
 
+
+	// printf("trace_ray\n");
 	list = *(rtv->scene);
 	clo.object = NULL;
 	clo = clo_object(rtv);
@@ -458,21 +474,24 @@ t_clo	clo_object(t_rtv *rtv)
 	t_inter		inter;
 	t_list		*list;
 
-	clo.distance = MAX_RENDER + 1;
+	clo.distance = MAX_RENDER;
 	clo.object = NULL;
 	list = rtv->scene;
 	while (list)
 	{
+		// printf("%s\n", "clo_object");
 		inter = ray_intersect(rtv, list);
 		if (inter.t1 >= MIN_RENDER && inter.t1 <= MAX_RENDER && inter.t1 < clo.distance)
 		{
 			clo.object = list;
 			clo.distance = inter.t1;
+			// printf("%s\n", "inter.t1");
 		}
 		if (inter.t2 >= MIN_RENDER && inter.t2 <= MAX_RENDER && inter.t2 < clo.distance)
 		{
 			clo.object = list;
 			clo.distance = inter.t2;
+			// printf("%s\n", "inter.t2");
 		}
 		list = list->next;
 	}
@@ -516,14 +535,16 @@ int		main(int argc, char **argv)
 	t_rtv		*rtv;
 	t_object	*obj;
 
+
 	if (argc == 2)
 	{
-		rtv = (t_rtv*)ft_memalloc(sizeof(t_rtv));
-		obj = (t_object*)ft_memalloc(sizeof(t_object));
+		rtv = (t_rtv*)malloc(sizeof(t_rtv));
+		obj = (t_object*)malloc(sizeof(t_object));
 		open_file(argv, obj, rtv);
 		print_scene(rtv);
-		print_light(rtv);
+		// print_light(rtv);
 		canvas_init(rtv);
+		ray_tracing(rtv);
 		mlx_hook(rtv->winPtr, 2, 5, event_handle, rtv);
 		mlx_loop(rtv->mlxPtr);
 	}

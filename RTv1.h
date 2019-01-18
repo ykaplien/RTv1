@@ -20,8 +20,8 @@
 # define CONE 444
 # define PLANE 445
 # define CYLINDER 446
-# define MAX_RENDER 60000
-# define MIN_RENDER 1
+# define MAX_RENDER 6000000
+# define MIN_RENDER 0,1
 # define BACKGROUND 0xffffff
 // # define DOT(d1, d2) (d1[0] * d2[0] + d1[1] * d2[1] + d1[2] * d2[2])
 
@@ -106,7 +106,7 @@ typedef struct s_object
 
 typedef struct	s_clo
 {
-	t_object	*object;
+	t_list		*object;
 	double		distance; //closest
 	double		z;
 
@@ -119,7 +119,10 @@ typedef struct	s_rtv
 	void		*mlxPtr;
 	void		*winPtr;
 	void		*imgPtr;
-	int			*imgSrc;
+	char		*imgSrc;
+	int			size_line;
+	int			bpp;
+	int			endian;
 
 	t_vector	cam;
 	t_list		*light;
@@ -132,7 +135,7 @@ typedef struct	s_rtv
 void	canvas_to_viewport(t_rtv *rtv, int x, int y);
 void	ray_tracing(t_rtv *rtv);
 int		sphere_color(t_list *list);
-void	pixel_to_img(t_rtv *rtv, int x, int y, int color);
+void	pixel_put_img(t_rtv *rtv, int x, int y, int color);
 double	vec_scalar(t_vector a, t_vector b);
 t_vector	vec_diff(t_vector a, t_vector b);
 
