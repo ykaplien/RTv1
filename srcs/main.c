@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../RTv1.h"
+#include "../inc/rtv1.h"
 
 void	error(int error)
 {
@@ -485,13 +485,13 @@ t_clo	clo_object(t_rtv *rtv)
 		{
 			clo.object = list;
 			clo.distance = inter.t1;
-			// printf("%s\n", "inter.t1");
+			printf("%s\n", "inter.t1");
 		}
 		if (inter.t2 >= MIN_RENDER && inter.t2 <= MAX_RENDER && inter.t2 < clo.distance)
 		{
 			clo.object = list;
 			clo.distance = inter.t2;
-			// printf("%s\n", "inter.t2");
+			printf("%s\n", "inter.t2");
 		}
 		list = list->next;
 	}
@@ -527,6 +527,7 @@ t_inter	sphere_intersect(t_rtv *rtv, t_sphere *sphere)
 	}
 	res.t1 = (-k.y + sqrt(discriminant)) / (2 * k.x);
 	res.t2 = (-k.y - sqrt(discriminant)) / (2 * k.x);
+	printf("%f %f\n", res.t1, res.t1);
 	return (res);
 }
 

@@ -21,8 +21,8 @@
 # define PLANE 445
 # define CYLINDER 446
 # define MAX_RENDER 6000000
-# define MIN_RENDER 0,1
-# define BACKGROUND 0xffffff
+# define MIN_RENDER 0
+# define BACKGROUND 0xff0000
 // # define DOT(d1, d2) (d1[0] * d2[0] + d1[1] * d2[1] + d1[2] * d2[2])
 
 # include <stdlib.h>
@@ -31,7 +31,7 @@
 # include "mlx.h"
 # include <math.h>
 # include <stdio.h>
-# include "libft/libft.h"
+# include "../libft/libft.h"
 
 typedef struct	s_dot
 {
